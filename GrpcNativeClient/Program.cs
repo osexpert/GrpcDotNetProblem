@@ -1,15 +1,13 @@
 ﻿using Grpc.Core;
-using Grpc.Net.Client;
 using GrpcService;
 
-namespace GrpcClient
+namespace GrpcNativeClient
 {
 	internal class Program
 	{
 		static async Task Main(string[] args)
 		{
-			var channel = GrpcChannel.ForAddress("http://localhost:5000", new GrpcChannelOptions { Credentials = ChannelCredentials.Insecure });
-
+			var channel = new Channel("localhost:5000", ChannelCredentials.Insecure);
 
 			var client = new Greeter.GreeterClient(channel);
 
