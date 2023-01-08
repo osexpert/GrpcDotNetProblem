@@ -1,5 +1,7 @@
 using Grpc.Core;
 using GrpcService;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Server.Kestrel.Core.Features;
 
 namespace GrpcService.Services
 {
@@ -16,8 +18,10 @@ namespace GrpcService.Services
 			await requestStream.MoveNext();
 
 			var reply = new HelloReply() { Message = "Via server : " + requestStream.Current.Name };
-
 			await responseStream.WriteAsync(reply);
+
+			var reply3 = new HelloReply() { Message = "quit" };
+			await responseStream.WriteAsync(reply3);
 		}
 	}
 }
