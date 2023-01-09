@@ -13,7 +13,10 @@ namespace GrpcService.Services
 			_logger = logger;
 		}
 
-		const bool GrpcDotnetBidirStreamNotClosedHacks = true;
+		/// <summary>
+		/// ENABLE HACK HERE
+		/// </summary>
+		const bool GrpcDotnetServerBidirStreamNotClosedHacks = false;
 
 		public override async Task EchoBidir(IAsyncStreamReader<EchoRequest> requestStream, IServerStreamWriter<EchoReply> responseStream, ServerCallContext context)
 		{
@@ -22,7 +25,7 @@ namespace GrpcService.Services
 			var reply = new EchoReply() { Reply = "Via server : " + requestStream.Current.Request };
 			await responseStream.WriteAsync(reply);
 
-			if (GrpcDotnetBidirStreamNotClosedHacks)
+			if (GrpcDotnetServerBidirStreamNotClosedHacks)
 			{
 				var hdr = context.RequestHeaders;
 				var agent = hdr.GetValue("user-agent");
