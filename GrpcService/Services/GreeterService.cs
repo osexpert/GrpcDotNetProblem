@@ -13,15 +13,42 @@ namespace GrpcService.Services
 			_logger = logger;
 		}
 
-		public override async Task SayHello(IAsyncStreamReader<HelloRequest> requestStream, IServerStreamWriter<HelloReply> responseStream, ServerCallContext context)
+		const bool GrpcDotnetBidirStreamNotClosedHacks = true;
+
+		public override async Task EchoBidir(IAsyncStreamReader<EchoRequest> requestStream, IServerStreamWriter<EchoReply> responseStream, ServerCallContext context)
 		{
 			await requestStream.MoveNext();
 
-			var reply = new HelloReply() { Message = "Via server : " + requestStream.Current.Name };
+			var reply = new EchoReply() { Reply = "Via server : " + requestStream.Current.Request };
 			await responseStream.WriteAsync(reply);
 
-			var reply3 = new HelloReply() { Message = "quit" };
-			await responseStream.WriteAsync(reply3);
+			if (GrpcDotnetBidirStreamNotClosedHacks)
+			{
+				var hdr = context.RequestHeaders;
+				var agent = hdr.GetValue("user-agent");
+				if (agent != null)
+				{
+					if (agent.StartsWith("grpc-dotnet/"))
+					{
+						// dotnet client: needs hangup hack
+						var reply3 = new EchoReply() { Reply = "quit" };
+						await responseStream.WriteAsync(reply3);
+					}
+					else if (agent.StartsWith("grpc-csharp/"))
+					{
+						// native client: needs very dirty hack
+						var ctx = context.GetHttpContext();
+						var http2stream = ctx.Features.Get<IHttp2StreamIdFeature>();
+						var meht = http2stream?.GetType().GetMethod("OnEndStreamReceived", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+						meht?.Invoke(http2stream, null);
+					}
+				}
+			}
+		}
+
+		public override async Task<EchoReply> EchoUnary(EchoRequest request, ServerCallContext context)
+		{
+			return new EchoReply { Reply = "Echoed from server: " + request.Request };
 		}
 	}
 }

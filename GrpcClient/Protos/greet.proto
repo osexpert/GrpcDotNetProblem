@@ -7,15 +7,16 @@ package greet;
 // The greeting service definition.
 service Greeter {
   // Sends a greeting
-  rpc SayHello (stream HelloRequest) returns (stream HelloReply);
+    rpc EchoBidir (stream EchoRequest) returns (stream EchoReply);
+  rpc EchoUnary (EchoRequest) returns (EchoReply);
 }
 
 // The request message containing the user's name.
-message HelloRequest {
-  string name = 1;
+message EchoRequest {
+  string request = 1;
 }
 
 // The response message containing the greetings.
-message HelloReply {
-  string message = 1;
+message EchoReply {
+  string reply = 1;
 }

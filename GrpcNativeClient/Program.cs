@@ -13,20 +13,26 @@ namespace GrpcNativeClient
 
 			int i = 0;
 
+			//while (true)
+			//{
+			//	var res = client.EchoUnary(new EchoRequest { Request = "unary hello " + i++ });
+			//	Console.WriteLine("Message from server: " + res.Reply);
+			//}
+
 			while (true)
 			{
-				using (var streaming = client.SayHello())
+				using (var streaming = client.EchoBidir())
 				{
-					await streaming.RequestStream.WriteAsync(new HelloRequest() { Name = "hello " + i++ });
+					await streaming.RequestStream.WriteAsync(new EchoRequest() { Request = "bidir hello " + i++ });
 
 					while (await streaming.ResponseStream.MoveNext())
 					{
-						if (streaming.ResponseStream.Current.Message == "quit")
+						if (streaming.ResponseStream.Current.Reply == "quit")
 						{
 							break;
 						}
 						else
-							Console.WriteLine("Message from server: " + streaming.ResponseStream.Current.Message);
+							Console.WriteLine("Message from server: " + streaming.ResponseStream.Current.Reply);
 					}
 
 					await streaming.RequestStream.CompleteAsync();
