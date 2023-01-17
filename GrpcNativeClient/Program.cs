@@ -11,19 +11,18 @@ namespace GrpcNativeClient
 
 			var client = new Greeter.GreeterClient(channel);
 
-			int i = 0;
+			await EchoBidirHangupTest(client);
+		}
 
-			//while (true)
-			//{
-			//	var res = client.EchoUnary(new EchoRequest { Request = "unary hello " + i++ });
-			//	Console.WriteLine("Message from server: " + res.Reply);
-			//}
-
+		private static async Task<int> EchoBidirHangupTest(Greeter.GreeterClient client)
+		{
+			int i = 1;
 			while (true)
 			{
-				using (var streaming = client.EchoBidir())
+
+				using (var streaming = client.EchoBidirHangup())
 				{
-					await streaming.RequestStream.WriteAsync(new EchoRequest() { Request = "bidir hello " + i++ });
+					await streaming.RequestStream.WriteAsync(new EchoRequest() { Request = "bidir hangup hello " + i++ });
 
 					while (await streaming.ResponseStream.MoveNext())
 					{
@@ -39,5 +38,7 @@ namespace GrpcNativeClient
 				}
 			}
 		}
+
+
 	}
 }

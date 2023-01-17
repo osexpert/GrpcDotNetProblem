@@ -1,20 +1,26 @@
-using Grpc.AspNetCore.Server;
-using Grpc.Core;
+﻿using Grpc.Core;
 using GrpcService;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Server.Kestrel.Core.Features;
 
-namespace GrpcService.Services
+namespace GrpcNativeService
 {
-	public class GreeterService : Greeter.GreeterBase
+	internal class Program
 	{
-		private readonly ILogger<GreeterService> _logger;
-		public GreeterService(ILogger<GreeterService> logger)
+		static async Task Main(string[] args)
 		{
-			_logger = logger;
-		}
+			var s = new Server()
+			{
+				Services = { Greeter.BindService(new MyService()) },
+				Ports = { new ServerPort("localhost", 5000, ServerCredentials.Insecure) }
+			};
 
+			s.Start();
+
+			await s.ShutdownTask;
+		}
+	}
+
+	class MyService : Greeter.GreeterBase
+	{
 		public override async Task EchoBidir(IAsyncStreamReader<EchoRequest> requestStream, IServerStreamWriter<EchoReply> responseStream, ServerCallContext context)
 		{
 			await requestStream.MoveNext();
@@ -33,8 +39,6 @@ namespace GrpcService.Services
 			var reply33 = new EchoReply() { Reply = "quit" };
 			await responseStream.WriteAsync(reply33);
 		}
-
-	
 
 	
 	}
