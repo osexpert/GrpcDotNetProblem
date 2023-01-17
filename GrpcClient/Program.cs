@@ -10,23 +10,21 @@ namespace GrpcClient
 		{
 			var channel = GrpcChannel.ForAddress("http://localhost:5000", new GrpcChannelOptions { Credentials = ChannelCredentials.Insecure });
 
-
 			var client = new Greeter.GreeterClient(channel);
+		
+			await EchoBidirHangupTest(client);
+		}
 
-			int i = 0;
 
-			//while (true)
-			//{
-			//	var res = client.EchoUnary(new EchoRequest { Request = "unary hello " + i++ });
-			//	Console.WriteLine("Message from server: " + res.Reply);
-			//}
-
+		private static async Task<int> EchoBidirHangupTest(Greeter.GreeterClient client)
+		{
+			int i = 1;
 			while (true)
 			{
 
-				using (var streaming = client.EchoBidir())
+				using (var streaming = client.EchoBidirHangup())
 				{
-					await streaming.RequestStream.WriteAsync(new EchoRequest() { Request = "bidir hello " + i++ });
+					await streaming.RequestStream.WriteAsync(new EchoRequest() { Request = "bidir hangup hello " + i++ });
 
 					while (await streaming.ResponseStream.MoveNext())
 					{
@@ -42,5 +40,11 @@ namespace GrpcClient
 				}
 			}
 		}
+
+
+
+
+	
+
 	}
 }

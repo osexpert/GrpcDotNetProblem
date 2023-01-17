@@ -8,6 +8,8 @@ package greet;
 service Greeter {
   // Sends a greeting
     rpc EchoBidir (stream EchoRequest) returns (stream EchoReply);
+    rpc EchoBidirHangup (stream EchoRequest) returns (stream EchoReply);
+    rpc EchoBidirAutoHacks (stream EchoRequest) returns (stream EchoReply);
   rpc EchoUnary (EchoRequest) returns (EchoReply);
 }
 
