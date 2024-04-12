@@ -1,6 +1,6 @@
 using GrpcService.Services;
 
-namespace GrpcService
+namespace grpcdotnetServer
 {
 	public class Program
 	{

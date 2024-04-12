@@ -1,7 +1,7 @@
 ﻿using Grpc.Core;
 using GrpcService;
 
-namespace GrpcNativeService
+namespace GrpcCoreServer
 {
 	internal class Program
 	{

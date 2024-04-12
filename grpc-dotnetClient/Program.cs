@@ -2,7 +2,7 @@
 using Grpc.Net.Client;
 using GrpcService;
 
-namespace GrpcClient
+namespace grpcdotnetClient
 {
 	internal class Program
 	{
