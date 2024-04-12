@@ -8,7 +8,8 @@ namespace GrpcService
 		{
 			var builder = WebApplication.CreateBuilder(args);
 
-		//	builder.Logging.ClearProviders();
+			// Logging make us slower and then the leak will not always (as easily) manifest
+			builder.Logging.ClearProviders();
 
 			// Additional configuration is required to successfully run gRPC on macOS.
 			// For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
