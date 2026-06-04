@@ -32,6 +32,10 @@ namespace GrpcService.Services
 
 			var reply33 = new EchoReply() { Reply = "quit" };
 			await responseStream.WriteAsync(reply33);
+
+			var tcs = new TaskCompletionSource();
+			context.CancellationToken.Register(() => tcs.SetResult());
+			await tcs.Task;
 		}
 
 	
