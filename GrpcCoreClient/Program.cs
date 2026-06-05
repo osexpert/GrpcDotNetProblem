@@ -22,19 +22,25 @@ namespace GrpcCoreClient
 
 				using (var streaming = client.EchoBidirHangup())
 				{
-					await streaming.RequestStream.WriteAsync(new EchoRequest() { Request = "bidir hangup hello " + i++ });
-
-					while (await streaming.ResponseStream.MoveNext())
+					try
 					{
-						if (streaming.ResponseStream.Current.Reply == "quit")
-						{
-							break;
-						}
-						else
-							Console.WriteLine("Message from server: " + streaming.ResponseStream.Current.Reply);
-					}
+						await streaming.RequestStream.WriteAsync(new EchoRequest() { Request = "bidir hangup hello " + i++ });
 
-					await streaming.RequestStream.CompleteAsync();
+						while (await streaming.ResponseStream.MoveNext())
+						{
+							if (streaming.ResponseStream.Current.Reply == "quit")
+							{
+								break;
+							}
+							else
+								Console.WriteLine("Message from server: " + streaming.ResponseStream.Current.Reply);
+						}
+
+					}
+					finally
+					{
+						await streaming.RequestStream.CompleteAsync();
+					}
 				}
 			}
 		}
